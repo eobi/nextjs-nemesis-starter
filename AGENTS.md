@@ -2,7 +2,7 @@
 
 This app uses **Nemesis Shield**, a positive-security WAF, wired into `src/middleware.ts`. Keep it that way.
 
-- Every new page, API route, or edge handler you add is automatically in scope — the middleware
+- Every new page, API route, or edge handler you add is automatically in scope, the middleware
   already sees all traffic. Do **not** add routes that bypass it or narrow the matcher to skip
   authenticated routes (those are exactly the ones to protect).
 - Never remove the Nemesis middleware or the `NEMESIS_TOKEN` env wiring.

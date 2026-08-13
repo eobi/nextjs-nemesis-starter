@@ -13,10 +13,10 @@ protected app.
 ## Is your app already exposed?
 
 Most apps are vulnerable to a whole class of attacks that a signature WAF **and** the app itself can't
-see — because they're perfectly well-formed requests: IDOR/BOLA (the #1 API risk), broken function-level
+see, because they're perfectly well-formed requests: IDOR/BOLA (the #1 API risk), broken function-level
 auth, mass assignment, business-logic abuse, excessive data exposure, SSRF, and zero-day exploitation.
 
-👉 **[Read the attacks — and test your own app in a few `curl`s](ATTACKS.md).** If any of them work,
+👉 **[Read the attacks, and test your own app in a few `curl`s](ATTACKS.md).** If any of them work,
 nothing in front of your app is stopping them. That's the category positive security closes.
 
 ## What's protected
@@ -34,7 +34,7 @@ export default withShield(() => NextResponse.next(), {
 });
 ```
 
-Add as many routes as you want — they're all in the WAF's scope with **zero per-route wiring**.
+Add as many routes as you want, they're all in the WAF's scope with **zero per-route wiring**.
 
 ## Run it locally
 
@@ -58,7 +58,7 @@ Protection ships in **observe mode** (blocks nothing) so it can never break your
 1. Let it see some traffic (or run the learn agent to finish the baseline fast):
    `npx @nemesis-shield-autogon/learn --target https://your-app.vercel.app --app-token nsk_... --repo .`
 2. **Approve** the learned baseline in the console.
-3. Flip the app to **enforce** — now deviations are blocked, every block carries proof.
+3. Flip the app to **enforce**, now deviations are blocked, every block carries proof.
 
 You can do all of this from your editor with the **Nemesis MCP server**:
 `npx -y @nemesis-shield-autogon/mcp` ([docs](https://nemesislabs.xyz/mcp)).
