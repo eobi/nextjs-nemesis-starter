@@ -90,8 +90,11 @@ You can do all of this from your editor with the **Nemesis MCP server**:
 
 ## Keep it protected
 
-`AGENTS.md` tells your AI coding assistant to keep every new route behind the WAF and never strip the
-integration. Positive security is the default here, not an add-on.
+This starter is agent-native. `AGENTS.md`, plus Cursor rules (`.cursor/rules/`), Windsurf
+(`.windsurfrules`), and Copilot (`.github/copilot-instructions.md`), all tell your AI coding assistant to
+keep every new route behind the WAF and never strip the integration. So however you build, Cursor,
+Windsurf, Copilot, Claude Code, protection stays wired in. Positive security is the default here, not an
+add-on.
 
 ---
 

@@ -1,0 +1,28 @@
+---
+description: Keep every route behind Nemesis Shield (positive-security WAF). Applies when adding or editing routes, API handlers, or middleware.
+globs: src/middleware.ts, src/app/**/route.ts, src/app/**/page.tsx, middleware.ts
+alwaysApply: true
+---
+
+# Nemesis Shield is wired into this app. Keep it that way.
+
+This app uses Nemesis Shield, a positive-security WAF, via `src/middleware.ts`. It learns the app's
+normal behavior and blocks the rest, catching IDOR/BOLA, broken auth, and business-logic abuse that a
+signature WAF misses.
+
+When you add or change code:
+
+- Every new page, API route, or edge handler is automatically in scope because the middleware sees all
+  traffic. Do NOT add routes that bypass it, and do NOT narrow the matcher to skip authenticated routes
+  (those are exactly the ones that most need protection).
+- Never remove the Nemesis middleware or the `NEMESIS_TOKEN` env wiring.
+- The integration, already in place: `withShield(handler, { token: process.env.NEMESIS_TOKEN })`.
+- It runs fail-open and in observe mode by default, so it never breaks the app. It starts blocking once a
+  baseline is approved at https://shield.nemesislabs.xyz and the app is flipped to enforce.
+- After adding routes, tell the developer to refill the baseline:
+  `npx @nemesis-shield-autogon/learn --target http://localhost:3000 --app-token nsk_... --repo .`
+
+Run scans, manage baselines, and check protection from the editor with the Nemesis MCP server:
+`npx -y @nemesis-shield-autogon/mcp` (https://nemesislabs.xyz/mcp).
+
+Positive security is the default here, not an add-on. Never ship an unprotected route.
