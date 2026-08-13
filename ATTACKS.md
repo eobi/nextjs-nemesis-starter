@@ -19,6 +19,63 @@ Try these against your own app. If any of them work, nothing in front of your ap
 
 ---
 
+## Platform layer: what Supabase and Vercel expose that your own code can't close
+
+These hit surfaces you did not write, the platform's auto-generated API or the edge in front of your
+app, so there is no line of your code to patch. This is where Supabase and Vercel apps get breached.
+
+### Direct PostgREST read, straight past your app (Supabase)
+
+Supabase auto-publishes every table at `/rest/v1/`, and the anon key ships in your browser bundle. Your
+app code is never in this path, so one loose row-level-security policy pours out the whole table.
+
+```bash
+# the anon key is in your site's JavaScript, anyone can read it
+curl "https://<ref>.supabase.co/rest/v1/profiles?select=*" -H "apikey: <anon-key>"
+```
+**Vulnerable if:** you get rows back. **Your WAF can't see it**, it's a valid REST call with a valid key.
+**Nemesis:** a `select=*` with no row filter on a table your app only reads by id is off-baseline, blocked.
+
+### Skip the auth middleware with one header (Vercel, Next.js CVE-2025-29927)
+
+Next.js runs auth in middleware. The header `x-middleware-subrequest` makes Next skip middleware
+entirely, so a protected route renders with no auth. On an unpatched version there is nothing to fix in
+your code, the check never runs.
+
+```bash
+curl https://your-app.vercel.app/admin \
+  -H "x-middleware-subrequest: middleware:middleware:middleware:middleware:middleware"
+```
+**Vulnerable if:** the gated page renders. **Your WAF can't see it**, it's one header.
+**Nemesis:** a request carrying that internal header is off-baseline on its face, blocked even before you patch.
+
+### Harvest production secrets from a preview URL (Vercel)
+
+Every pull request gets a public `*.vercel.app` preview, usually built with the same environment
+variables as production and often with no auth. Attackers enumerate and index them.
+
+```bash
+curl https://your-app-git-feature-x-yourteam.vercel.app/api/internal/config
+```
+**Vulnerable if:** a preview answers with live keys or internal endpoints. **Nemesis:** the same app token
+protects every deployment, so traffic outside the learned production baseline is flagged wherever it lands.
+
+### Read the whole schema, then export it (Supabase pg_graphql)
+
+Supabase exposes GraphQL at `/graphql/v1`. Introspection hands over your schema, then one query with a
+large `first:` argument pulls thousands of rows. You never wrote this endpoint.
+
+```bash
+curl https://<ref>.supabase.co/graphql/v1 -H "apikey: <anon-key>" -H "content-type: application/json" \
+  -d '{"query":"{ profilesCollection(first: 5000){ edges { node { id email } } } }"}'
+```
+**Vulnerable if:** thousands of rows come back. **Nemesis:** a schema dump or a 5,000-row pull is nowhere
+in your app's small set of GraphQL operations, blocked.
+
+---
+
+## Application layer: attacks your WAF still waves through
+
 ### 1. Broken Object Level Authorization (BOLA / IDOR), the #1 API risk
 
 Ask for an object that isn't yours. The request is valid; only the *authorization* is wrong.

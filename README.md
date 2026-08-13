@@ -19,6 +19,31 @@ auth, mass assignment, business-logic abuse, excessive data exposure, SSRF, and 
 👉 **[Read the attacks, and test your own app in a few `curl`s](ATTACKS.md).** If any of them work,
 nothing in front of your app is stopping them. That's the category positive security closes.
 
+## Where teams use this
+
+The same one-line wrapper covers surfaces that RLS and a signature WAF both miss:
+
+- **Multi-tenant B2B SaaS.** One tenant reading another's records (BOLA/BFLA) is the #1 API risk. Even
+  if a code path forgets the check, the request is off that tenant's learned access pattern and is stopped.
+- **Vercel API routes holding secrets.** `/api/*` handlers that reach your database or a payment
+  provider. Mass assignment and excessive data exposure are caught as shape deviations.
+- **Payments and fintech flows.** Business-logic abuse such as a zero price or a negative quantity is
+  flagged, and money-movement requests carry a fraud and AML trail.
+- **AI and LLM endpoints.** Prompt injection and abuse arrive as off-baseline traffic, not a signature
+  you have to guess in advance.
+- **Same-day zero-days.** An exploit against a dependency you ship is blocked before you can patch,
+  because it does not match your baseline.
+- **Compliance evidence.** Every block is proof-carrying, so an auditor sees why a request was refused,
+  not just that it was.
+
+## Why teams add it
+
+- **One line, and it is fail-open.** It never takes your app down, even if the service is unreachable.
+- **Observe first.** It blocks nothing until you approve a learned baseline, so it cannot break you on day one.
+- **Per-app, not a global ruleset.** It learns your normal and blocks the deviation, which is why it
+  catches well-formed attacks a shared WAF ruleset cannot.
+- **Zero per-route wiring.** Every new page, route, and handler is in scope automatically.
+
 ## What's protected
 
 Everything. The middleware matcher covers all pages and API routes:
