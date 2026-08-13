@@ -10,6 +10,15 @@ business-logic abuse that a signature WAF never sees. Observe mode by default, f
 Clicking **Deploy** clones this repo, prompts you for a free `NEMESIS_TOKEN`, and ships a live,
 protected app.
 
+## Is your app already exposed?
+
+Most apps are vulnerable to a whole class of attacks that a signature WAF **and** the app itself can't
+see — because they're perfectly well-formed requests: IDOR/BOLA (the #1 API risk), broken function-level
+auth, mass assignment, business-logic abuse, excessive data exposure, SSRF, and zero-day exploitation.
+
+👉 **[Read the attacks — and test your own app in a few `curl`s](ATTACKS.md).** If any of them work,
+nothing in front of your app is stopping them. That's the category positive security closes.
+
 ## What's protected
 
 Everything. The middleware matcher covers all pages and API routes:
