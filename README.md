@@ -56,8 +56,8 @@ You can do all of this from your editor with the **Nemesis MCP server**:
 
 ## Keep it protected
 
-`AGENTS.md` tells your AI coding assistant (Cursor, Claude Code, Windsurf) to keep every new route
-behind the WAF and never strip the integration. Positive security is the default here, not an add-on.
+`AGENTS.md` tells your AI coding assistant to keep every new route behind the WAF and never strip the
+integration. Positive security is the default here, not an add-on.
 
 ---
 
